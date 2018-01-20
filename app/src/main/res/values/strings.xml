@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">VSLwatchApp</string>
+
+    <string name="btn_cowi">Send lumen value</string>
+    <string name="btn_cowi_done">Connected to wifi</string>
+
+
+    <string name="btn_cowe">Connected to the internet</string>
+
+    <string name="btn_cosec">Secured connection to vienna</string>
+    <string name="title_activity_map">MapActivity</string>
+
+
+</resources>
