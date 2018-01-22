@@ -1,5 +1,7 @@
-package com.aubet.francois.VacumBotControler;
+package com.aubet.francois.VacumBotControler.connection;
 
+
+import com.aubet.francois.VacumBotControler.activities.MainActivity;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,6 +15,8 @@ import java.io.OutputStreamWriter;
  * Created by root on 30.10.17.
  */
 
+
+
 public class SocketManager extends Thread {
 
 
@@ -25,6 +29,7 @@ public class SocketManager extends Thread {
 	public boolean connected = false;	// leting know if the connection is active
 	private BufferedReader in;
 	private BufferedWriter out;
+	public boolean stopRequested = false;
 
 	public SocketManager(BlockingQueue<String> queue, String hostIP, int port) {
 		this.queue = queue;
@@ -32,40 +37,41 @@ public class SocketManager extends Thread {
 		this.port = port;
 	}
 
-@Override
+
+
+
+	@Override
 	public void run() {
-
-		try {
-			socket = new Socket();
-			socket.connect(new InetSocketAddress(hostIP, port), 5000);
-
-            in = new BufferedReader (new InputStreamReader (socket.getInputStream()));
-			appInput = new Input(in);
-			appInput.start();
-
-			out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-			appOutput = new Output(queue,out);
-			appOutput.start();
-
-			com.aubet.francois.VacumBotControler.State.connectedPi = true;
-
-			appInput.join();
-			appOutput.join();
-
-
-		} catch (IOException | InterruptedException e ) { //| InterruptedException
-			e.printStackTrace();
-		} finally {
 			try {
-				if (socket != null)
-					socket.close();
-					com.aubet.francois.VacumBotControler.State.connectedPi = false;
-					connected = false;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+				socket = new Socket();
+				socket.connect(new InetSocketAddress(hostIP, port), 5000);
 
+				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				appInput = new Input(in);
+				appInput.start();
+
+				out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+				appOutput = new Output(queue, out);
+				appOutput.start();
+
+				com.aubet.francois.VacumBotControler.model.State.connectedPi = true;
+
+				appInput.join();
+				appOutput.join();
+
+
+			} catch (IOException | InterruptedException e) { //| InterruptedException
+				e.printStackTrace();
+			} finally {
+				try {
+					if (socket != null)
+						socket.close();
+					com.aubet.francois.VacumBotControler.model.State.connectedPi = false;
+					connected = false;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 	}
 
 
@@ -90,7 +96,7 @@ public class SocketManager extends Thread {
 				} catch (InterruptedException | IOException e) {
 					System.out.println("                                fail");
 					stopRequested = true;
-					com.aubet.francois.VacumBotControler.State.connectionLost();
+					com.aubet.francois.VacumBotControler.model.State.connectionLost();
 				}
 				//try {	output.flush();	} catch ( IOException e) {	System.out.println("fail2");}
 				//System.out.println("out");
@@ -129,9 +135,9 @@ public class SocketManager extends Thread {
 					System.out.println("rep:" + line);
 					MainActivity.onReceivedCommand(line);
 				}
-                try {
-                    Thread.sleep(100);
-                }catch(InterruptedException e){}
+                /*try {
+                    Thread.sleep(0);
+                }catch(InterruptedException e){}*/
 				//System.out.println("in");
 
 

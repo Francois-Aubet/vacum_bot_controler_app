@@ -1,4 +1,4 @@
-package com.aubet.francois.VacumBotControler;
+package com.aubet.francois.VacumBotControler.model;
 
 /**
  * Created by root on 31.10.17.
